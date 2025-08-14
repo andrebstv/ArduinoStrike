@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/ArduinoStrike/ArduinoStrike/Libraries/include/boost
+/ArduinoStrike/ArduinoStrike/Release
+/ArduinoStrike/ArduinoStrike/Debug
+/ArduinoStrike/packages
+/ArduinoStrike/Release
+/ArduinoStrike/Debug
+/.github/ISSUE_TEMPLATE
+/ArduinoStrike/.vs/ArduinoStrike
+/.github
