@@ -1,0 +1,10 @@
+[10.08.2025 12:48:11] [info] Searching for device...
+[10.08.2025 12:48:11] [debug] Configuration file not found.
+[10.08.2025 12:48:11] [info] Enumerating connected devices...
+[10.08.2025 12:48:11] [info] Detected device: FRIENDLYNAME = USB Serial Device (COM5), HARDWAREID = USB\VID_2341&PID_8036&REV_0100&MI_00, PORT = COM5
+[10.08.2025 12:48:11] [info] Device matched by VID/PID: USB\VID_2341&PID_8036&REV_0100&MI_00
+[10.08.2025 12:48:11] [info] Device found: Arduino Leonardo (COM5)
+[10.08.2025 12:48:11] [info] Port opened successfully.
+[10.08.2025 12:48:11] [info] Port initialized successfully.
+[10.08.2025 12:48:15] [info] Received CTRL+C. Shutting down...
+[10.08.2025 12:48:15] [debug] Disconnected from Arduino.

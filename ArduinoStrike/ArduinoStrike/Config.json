@@ -1,0 +1,20 @@
+{
+    "ak47Key": 115,
+    "augKey": 118,
+    "autoAcceptKey": 72,
+    "bhop": false,
+    "colorBotKey": 88,
+    "colorThreshold": 20,
+    "confirmationKey": 0,
+    "famasKey": 117,
+    "fastReload": false,
+    "galilKey": 116,
+    "m4a1Key": 113,
+    "m4a4Key": 114,
+    "offKey": 123,
+    "rapidFire": true,
+    "sensitivity": 1.5,
+    "sgKey": 119,
+    "umpKey": 112,
+    "zoomSensitivity": 1.0
+}
