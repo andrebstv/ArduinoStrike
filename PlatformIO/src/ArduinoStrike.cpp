@@ -20,7 +20,7 @@ bool is_timer_elapsed(unsigned long& timer, unsigned long interval)
 
 void handle_mouse_middle_holded()
 {
-    if (is_timer_elapsed(timer1, 200))
+    if (is_timer_elapsed(timer1, 100 + random(10,25)))
     {
         Mouse.click(MOUSE_LEFT);
     }
@@ -76,7 +76,7 @@ void setup()
 volatile uint32_t timer_led;
 volatile uint32_t timer_crouch;
 bool flag = 1; //Remove to add pre crouch
-#define T_LED 250
+#define T_LED 150
 #define T_CROUCH 1000
 
 void loop()
