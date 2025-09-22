@@ -1,5 +1,9 @@
 #pragma once
 #include "Config.h"
+#include <windows.h>
+#include <thread>
+#include <atomic>
+#include <iostream>
 
 enum Weapon
 {
@@ -26,15 +30,28 @@ inline bool IsKeyPressed(int key)
     return (GetAsyncKeyState(key) & 1) != 0;
 }
 
-inline bool IsKeyHolded(int key)
-{
-    if (key == VK_LBUTTON)
-    {
-        return (GetKeyState(VK_LBUTTON) & 0x8000) != 0;
-    }
-    
-    return (GetAsyncKeyState(key) & 0x8000) != 0;
-}
+//inline bool IsKeyHolded(int key)
+//{
+//    if (key == VK_LBUTTON)
+//    {
+//        return (GetKeyState(VK_LBUTTON) & 0x8000) != 0;
+//    }
+//  
+//    return (GetAsyncKeyState(key) & 0x8000) != 0;
+//}
+
+//TODO organizar isso.
+//extern volatile bool g_xbutton1Down;
+//extern volatile bool g_xbutton2Down;
+extern HHOOK hHook;
+
+bool IsKeyHolded(int key);
+
+LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
+
+bool InstallMouseHook();
+void HookThread();
+
 
 inline WeaponData GetWeaponData(Weapon weapon, double modifier)
 {
@@ -61,10 +78,16 @@ inline WeaponData GetWeaponData(Weapon weapon, double modifier)
                 { 15, 88, 87, 87, 87, 87, 87, 88, 88, 88, 88, 88, 88, 88, 88, 87, 87, 87, 87, 88, 88, 88, 88, 88, 88, 87, 87, 87, 87, 215 }
             };
 
+        //case AK47:
+        //    return {
+        //        { -1 * modifier, 0 * modifier, 1 * modifier, 4 * modifier, 8 * modifier, 7 * modifier, -1 * modifier,-12 * modifier,-22 * modifier,-19 * modifier,-13 * modifier,-12 * modifier,-8 * modifier,3 * modifier, 17 * modifier,23 * modifier,24 * modifier,21 * modifier,15 * modifier,3 * modifier, -1 * modifier,-2 * modifier,1 * modifier, 3 * modifier, -2 * modifier,-16 * modifier,370 * modifier,550 * modifier,600 * modifier },
+        //        {7 * modifier, 10 * modifier, 13 * modifier, 25 * modifier, 30 * modifier, 29 * modifier, 25 * modifier, 11 * modifier, 5 * modifier, 3 * modifier, 3 * modifier, 2 * modifier, 2 * modifier, 2 * modifier, 4 * modifier, 5 * modifier, 4 * modifier, 1 * modifier, -3 * modifier, -1 * modifier, 2 * modifier, 5 * modifier, 5 * modifier, 2 * modifier, 1 * modifier, -2 * modifier, -6 * modifier, -9 * modifier, -8 * modifier},
+        //        { 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99 }
+        //    };
         case AK47:
             return {
                 { -1 * modifier, 0 * modifier, 1 * modifier, 4 * modifier, 8 * modifier, 7 * modifier, -1 * modifier,-12 * modifier,-22 * modifier,-19 * modifier,-13 * modifier,-12 * modifier,-8 * modifier,3 * modifier, 17 * modifier,23 * modifier,24 * modifier,21 * modifier,15 * modifier,3 * modifier, -1 * modifier,-2 * modifier,1 * modifier, 3 * modifier, -2 * modifier,-16 * modifier,370 * modifier,550 * modifier,600 * modifier },
-                {15 * modifier, 20 * modifier, 25 * modifier, 30 * modifier, 32 * modifier, 29 * modifier, 25 * modifier, 11 * modifier, 5 * modifier, 3 * modifier, 3 * modifier, 2 * modifier, 2 * modifier, 2 * modifier, 4 * modifier, 5 * modifier, 4 * modifier, 1 * modifier, -3 * modifier, -1 * modifier, 2 * modifier, 5 * modifier, 5 * modifier, 2 * modifier, 1 * modifier, -2 * modifier, -6 * modifier, -9 * modifier, -8 * modifier},
+                {0 * modifier, 3 * modifier, 25 * modifier, 30 * modifier, 32 * modifier, 29 * modifier, 25 * modifier, 11 * modifier, 5 * modifier, 3 * modifier, 3 * modifier, 2 * modifier, 2 * modifier, 2 * modifier, 4 * modifier, 5 * modifier, 4 * modifier, 1 * modifier, -3 * modifier, -1 * modifier, 2 * modifier, 5 * modifier, 5 * modifier, 2 * modifier, 1 * modifier, -2 * modifier, -6 * modifier, -9 * modifier, -8 * modifier},
                 { 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99 }
             };
 

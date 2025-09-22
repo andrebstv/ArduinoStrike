@@ -12,6 +12,7 @@
 #include "FastReload.h"
 #include "ModuleManager.h"
 #include "RecoilControl.h"
+#include <windows.h>
 volatile bool g_shouldExit = false;
 
 static BOOL WINAPI ConsoleHandler(DWORD dwCtrlType)
@@ -25,6 +26,7 @@ static BOOL WINAPI ConsoleHandler(DWORD dwCtrlType)
 
     return FALSE;
 }
+
 
 int main(int argc, char* argv[])
 {
@@ -71,7 +73,9 @@ int main(int argc, char* argv[])
         Logger::LogMessage("Exiting...");
         return 1;
     }
-    
+    //InstallMouseHook();
+
+    std::thread(HookThread).detach();
     utils.PrintAscii(ASCII_OUTRO);
     utils.PrintHotkeys(config.GenerateHotkeysString());
 
@@ -86,7 +90,7 @@ int main(int argc, char* argv[])
     while (!g_shouldExit)
     {
         manager.ProcessModules(*arduino, config);
-        sleep_for(milliseconds(10));
+        sleep_for(milliseconds(5));
     }
     
     delete arduino;

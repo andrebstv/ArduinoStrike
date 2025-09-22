@@ -18,7 +18,7 @@ const json Config::DEFAULT_CONFIG =
 
     { "sensitivity", 8.0 },
     { "zoomSensitivity", 1.0 },
-    { "colorThreshold", 20 },
+    { "colorThreshold", 30 },
 
     { "confirmationKey", 0x00 },
     { "colorBotKey", 0x58 },
@@ -170,7 +170,7 @@ bool Config::Validate(const json& j) const
             { "offKey", 0, 0xFE },
             { "sensitivity", 1.0, 8.0 },
             { "zoomSensitivity", 0.01, 3.0 },
-            { "colorThreshold", 0, 20 },
+            { "colorThreshold", 0, 30 },
             { "confirmationKey", 0, 0xFE },
             { "colorBotKey", 0, 0xFE },
             { "autoAcceptKey", 0, 0xFE }
@@ -364,8 +364,8 @@ void Config::ConfigureSettings()
         "Enter the Color Bot threshold.\n"
         "This sets how sensitive the Color Bot is to color differences.\n"
         "Lower values mean stricter matching, higher values allow more variation.\n"
-        "Range: 0 (exact match) to 20 (maximum variation).\n"
-        "Example: 20\n> ", 0, 20);
+        "Range: 0 (exact match) to 50 (maximum variation).\n"
+        "Example: 20\n> ", 0, 50);
 }
 
 void Config::ConfigureKeys()

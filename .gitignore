@@ -446,3 +446,8 @@ device_config.cfg
 # Visual Studio 6 technical files
 *.ncb
 *.aps 
+/PlatformIO/.vscode/c_cpp_properties.json
+/PlatformIO/.vscode/launch.json
+PlatformIO/.vscode/
+*.vcxproj
+.vcxproj

@@ -15,5 +15,5 @@ __      __       _   _
   \_/\_/\___/_| |_\_\_|_||_\__, | 
                            |___/  
                                   
-   CTRL + C to stop the program   
+   CTRL + C to stop the program v1.1   
 )";

@@ -9,6 +9,8 @@ class RecoilControl : public AutomaticModule
 public:
     RecoilControl(ModuleManager& manager);
 
+    void Control(Arduino& arduino, const Config& config);
+
     void Execute(Arduino& arduino, const Config& config) override;
 
 private:

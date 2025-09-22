@@ -58,8 +58,8 @@ Arduino::Arduino(LPCSTR name, bool dry_run) : io_context(), serial_port(io_conte
 
     try
     {
-        serial_port.set_option(serial_port::baud_rate(9600));
-        serial_port.set_option(serial_port::baud_rate(9600));
+        serial_port.set_option(serial_port::baud_rate(115200));
+        serial_port.set_option(serial_port::baud_rate(115200));
         serial_port.set_option(serial_port::character_size(8));
         serial_port.set_option(serial_port::stop_bits(serial_port::stop_bits::one));
         serial_port.set_option(serial_port::parity(serial_port::parity::none));

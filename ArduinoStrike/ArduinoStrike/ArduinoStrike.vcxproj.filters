@@ -32,6 +32,7 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Logger</Filter>
     </ClCompile>
+    <ClCompile Include="Weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Arduino">
@@ -66,6 +67,9 @@
     </Filter>
     <Filter Include="Logger">
       <UniqueIdentifier>{b8e5a23f-310c-45fc-81da-975ea5e07cef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CS2_Dumper">
+      <UniqueIdentifier>{43319b19-633c-436a-879a-009d88816016}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +123,21 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Logger.h">
       <Filter>Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons.hpp">
+      <Filter>CS2_Dumper</Filter>
+    </ClInclude>
+    <ClInclude Include="client_dll.hpp">
+      <Filter>CS2_Dumper</Filter>
+    </ClInclude>
+    <ClInclude Include="mem.hpp">
+      <Filter>CS2_Dumper</Filter>
+    </ClInclude>
+    <ClInclude Include="offsets.hpp">
+      <Filter>CS2_Dumper</Filter>
+    </ClInclude>
+    <ClInclude Include="recoil.hpp">
+      <Filter>CS2_Dumper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
