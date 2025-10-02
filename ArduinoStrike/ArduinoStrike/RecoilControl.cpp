@@ -89,8 +89,6 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
             float mouseMoveX = -(-(aimPunchAngle.y - oPunch.y) * 2.f / (yawFactor * sensitivity));
             float mouseMoveY = -(aimPunchAngle.x - oPunch.x) * 2.f / (pitchFactor * sensitivity);
 
-            //std::srand(std::time(nullptr));
-
             // Gera um número aleatório entre 30 e 50, inclusive para piorar o movimento.
             //int valor = std::rand() % (max - min + 1) + min;
 
@@ -137,8 +135,7 @@ void RecoilControl::Execute(Arduino& arduino, const Config& config)
         weapon = OFF;
         return;
     }
-    Control(arduino,config); //Novo controle via memoria.
-    //ProcessRecoilData(arduino, config, data);
+    ProcessRecoilData(arduino, config, data);
 }
 
 double RecoilControl::CalculateModifier(const Config& config, double obs)
@@ -154,21 +151,14 @@ bool RecoilControl::ValidateWeaponData(const WeaponData& data)
 
 void RecoilControl::ProcessRecoilData(Arduino& arduino, const Config& config, const WeaponData& data)
 {
-    for (size_t i = 0; i < data.x.size(); i++)
+    while((IsKeyHolded(VK_LBUTTON) && (config.GetConfirmationKey() == 0 || (config.GetConfirmationKey()))))
     {
-        if (!IsKeyHolded(VK_LBUTTON) || (config.GetConfirmationKey() != 0 && !IsKeyHolded(config.GetConfirmationKey())))
-        {
-            return;
-        }
-        arduino.WriteMessage("MOUSE_LEFT_HOLDED:" + to_string(data.x[i]) + "," + to_string(data.y[i]) + "," + to_string(data.delay[i]));
-        sleep_for(milliseconds(data.delay[i]));
+        Control(arduino, config);
     }
 
-    arduino.WriteMessage("MOUSE_LEFT_CLICK");
-
-    if (auto* fastReload = manager.GetModule<FastReload>("FastReload"))
-    {
-        fastReload->SetCurrentWeapon(weapon);
-        fastReload->Process(arduino, config);
-    }
+    //if (auto* fastReload = manager.GetModule<FastReload>("FastReload"))
+    //{
+    //    fastReload->SetCurrentWeapon(weapon);
+    //    fastReload->Process(arduino, config);
+    //}
 }

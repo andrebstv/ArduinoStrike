@@ -1,179 +1,297 @@
 #pragma once
-#include <Windows.h> // RPM + WPM
-#include <TlHelp32.h> // getting processIds.
-#include <Psapi.h> // enumprocessmodules
-#include <string> // generally nicer to work with than chars, but that's your preference.
-#include <vector> // std::vector
-#include <iostream>  // Para printf
-#include <cstring>   // Para strstr
+#include <Windows.h>
+#include <winternl.h>  // <-- definições NTSTATUS
+#include <TlHelp32.h>
+#include <Psapi.h>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cstring>
 
-/*
-Created By https://github.com/carlgwastaken/
-Please Support Open Source and leave this message here if you're using in your own source
-Besides that, enjoy!
-*/
+// Definições NTSTATUS
+#ifndef STATUS_SUCCESS
+#define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
+#endif
 
-// the ReadProcessMemory is basically just a pointer to this function + some error handling, so we save some performance.
-// 5% according to the post below:
-// unknowncheats.me/forum/general-programming-and-reversing/230813-readprocessmemory-vs-ntreadvirtualmemory-performance-benchmark-comparison.html
-typedef NTSTATUS(WINAPI* pNtReadVirtualMemory)(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToRead, PULONG NumberOfBytesRead);
+#ifndef STATUS_UNSUCCESSFUL
+#define STATUS_UNSUCCESSFUL ((NTSTATUS)0xC0000001L)
+#endif
+
+#ifndef NT_SUCCESS
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
+#endif
+
+// Estrutura para armazenar informações do syscall
+typedef struct _SYSCALL_INFO {
+    DWORD ssn;
+    PVOID syscallAddr;
+} SYSCALL_INFO;
+
 typedef NTSTATUS(WINAPI* pNtWriteVirtualMemory)(HANDLE Processhandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToWrite, PULONG NumberOfBytesWritten);
+
+// Declaração da função assembly externa
+extern "C" NTSTATUS DirectSyscall(
+    DWORD ssn,
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG NumberOfBytesToRead,
+    PULONG NumberOfBytesRead
+);
 
 class memify
 {
 private:
-	// initalize at 0 so we can check later
-	HANDLE handle = 0;
-	DWORD processID = 0;
+    HANDLE handle = 0;
+    DWORD processID = 0;
 
-	// define Virtual Read + Virtual Write
-	pNtReadVirtualMemory VRead;
-	pNtWriteVirtualMemory VWrite;
+    SYSCALL_INFO syscallInfo = { 0 };
+    bool syscallInitialized = false;
 
-	uintptr_t GetProcessId(std::string_view processName)
-	{
-		// define processentry32
-		PROCESSENTRY32 pe;
-		pe.dwSize = sizeof(PROCESSENTRY32);
+    pNtWriteVirtualMemory VWrite;
 
-		// create a snapshot handle
-		HANDLE ss = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    bool InitializeSyscall() {
+        if (syscallInitialized) return true;
 
-		// loop through all process
-		while (Process32Next(ss, &pe)) {
-			// compare program names to processName
-			if (!processName.compare(pe.szExeFile)) {
-				processID = pe.th32ProcessID;
-				return processID;
-			}
-		}
-	}
+        HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
+        if (!hNtdll) return false;
 
-	// uses already open handle to enumerate, you could also use PROCESSENTRY32 here.
-	uintptr_t GetBaseModule(std::string_view moduleName)
-	{
-		HMODULE modules[1024];
-		DWORD neededmodule;
+        BYTE* pFunc = (BYTE*)GetProcAddress(hNtdll, "NtReadVirtualMemory");
+        if (!pFunc) return false;
 
-		if (EnumProcessModules(handle, modules, sizeof(modules), &neededmodule))
-		{
-			int moduleCount = neededmodule / sizeof(HMODULE);
+        // Verifica o padrão: mov r10, rcx; mov eax, [SSN]; syscall
+        if (pFunc[0] == 0x4C && pFunc[1] == 0x8B && pFunc[2] == 0xD1 && pFunc[3] == 0xB8) {
+            syscallInfo.ssn = *(DWORD*)(pFunc + 4);
+            syscallInfo.syscallAddr = pFunc + 0x12;
+            syscallInitialized = true;
+            return true;
+        }
 
-			for (int i = 0; i < moduleCount; ++i)
-			{
-				char buffer[MAX_PATH];
+        return false;
+    }
 
-				if (GetModuleBaseNameA(handle, modules[i], buffer, sizeof(buffer)))
-				{
-					if (!moduleName.compare(buffer)) {
-						return reinterpret_cast<uintptr_t>(modules[i]);
-					}
-				}
-			}
-		}
+    //// Wrapper para NtReadVirtualMemory via syscall direto
+    NTSTATUS VRead(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToRead, PULONG NumberOfBytesRead) {
+        if (!syscallInitialized) {
+            if (!InitializeSyscall()) {
+                return STATUS_UNSUCCESSFUL;
+            }
+        }
 
-		return 0;
-	}
+        return DirectSyscall(
+            syscallInfo.ssn,
+            ProcessHandle,
+            BaseAddress,
+            Buffer,
+            NumberOfBytesToRead,
+            NumberOfBytesRead
+        );
+    }
+
+    // Versao com debug
+
+    /*NTSTATUS VRead(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToRead, PULONG NumberOfBytesRead) {
+        printf("[VRead] Iniciando leitura...\n");
+        printf("[VRead] Handle: %p\n", ProcessHandle);
+        printf("[VRead] Address: 0x%llX\n", (uintptr_t)BaseAddress);
+        printf("[VRead] Size: %lu bytes\n", NumberOfBytesToRead);
+
+        if (!syscallInitialized) {
+            printf("[VRead] Syscall nao inicializado, tentando inicializar...\n");
+            if (!InitializeSyscall()) {
+                printf("[VRead ERRO] Falha ao inicializar syscall!\n");
+                return STATUS_UNSUCCESSFUL;
+            }
+            printf("[VRead] Syscall inicializado com sucesso!\n");
+        }
+
+        printf("[VRead] SSN: 0x%X\n", syscallInfo.ssn);
+        printf("[VRead] Chamando DirectSyscall...\n");
+
+        NTSTATUS status = DirectSyscall(
+            syscallInfo.ssn,
+            ProcessHandle,
+            BaseAddress,
+            Buffer,
+            NumberOfBytesToRead,
+            NumberOfBytesRead
+        );
+
+        printf("[VRead] Status retornado: 0x%X\n", status);
+        if (NumberOfBytesRead && *NumberOfBytesRead > 0) {
+            printf("[VRead] Bytes lidos: %lu\n", *NumberOfBytesRead);
+        }
+        else {
+            printf("[VRead] Nenhum byte lido!\n");
+        }
+
+        return status;
+    }*/
+
+
+
+    uintptr_t GetProcessId(std::string_view processName)
+    {
+        PROCESSENTRY32 pe;
+        pe.dwSize = sizeof(PROCESSENTRY32);
+
+        HANDLE ss = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (ss == INVALID_HANDLE_VALUE) return 0;
+
+        while (Process32Next(ss, &pe)) {
+            if (!processName.compare(pe.szExeFile)) {
+                processID = pe.th32ProcessID;
+                CloseHandle(ss);
+                return processID;
+            }
+        }
+
+        CloseHandle(ss);
+        return 0;
+    }
+
+    uintptr_t GetBaseModule(std::string_view moduleName)
+    {
+        HMODULE modules[1024];
+        DWORD neededmodule;
+
+        if (EnumProcessModules(handle, modules, sizeof(modules), &neededmodule))
+        {
+            int moduleCount = neededmodule / sizeof(HMODULE);
+
+            for (int i = 0; i < moduleCount; ++i)
+            {
+                char buffer[MAX_PATH];
+
+                if (GetModuleBaseNameA(handle, modules[i], buffer, sizeof(buffer)))
+                {
+                    if (!moduleName.compare(buffer)) {
+                        return reinterpret_cast<uintptr_t>(modules[i]);
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+
 public:
-	// if you have an array of possible process names you want to loop through, and if one matches it will grab the handle for that.
-	// this could be used if for example working with a mod that uses the base game for its gameplay, or a game that you usually play on multiple versions on.
-	// keep in mind, this can get annoying with offsets VERY fast.
-	memify(std::vector<std::string> processes) {
-		VRead = (pNtReadVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtReadVirtualMemory");
-		VWrite = (pNtWriteVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
+    memify(std::vector<std::string> processes) {
+        if (!InitializeSyscall()) {
+            printf("[!!] Falha ao inicializar syscall direto\n");
+        }
 
-		for (auto& name : processes) {
-			processID = GetProcessId(name);
+        //VWrite = (pNtWriteVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
 
-			if (processID != 0) {
-				handle = OpenProcess(PROCESS_ALL_ACCESS, 0, processID);
-				if (handle) {
-					break;
-				}
-				else {
-					// somehow we got a valid processID but not a valid handle?
-					continue;
-				}
-			}
-			continue;
-		}
-	}
+        for (auto& name : processes) {
+            processID = GetProcessId(name);
 
-	// constructor opens handle and you save one line!!!! (will make your spaghetti code 10x better)
-	memify(std::string_view processName)
-	{
-		VRead = (pNtReadVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtReadVirtualMemory");
-		VWrite = (pNtWriteVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
+            if (processID != 0) {
+                handle = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, processID);
+                if (handle) {
+                    //printf("[>>] Anexado ao processo: %s (PID: %d)\n", name.c_str(), processID);
+                    break;
+                }
+                else {
+                    printf("[!!] PID valido mas falha ao abrir handle: %s\n", name.c_str());
+                    continue;
+                }
+            }
+            continue;
+        }
 
-		processID = GetProcessId(processName);
+        if (!handle) {
+            printf("[!!] Nenhum processo foi encontrado\n");
+        }
+    }
 
-		if (processID != 0)
-		{
-			handle = OpenProcess(PROCESS_ALL_ACCESS, 0, processID);
-			if (!handle) {
-				printf("[>>] Failed to open handle to process.");
-			}
-		}
-	}
+    memify(std::string_view processName)
+    {
+        if (!InitializeSyscall()) {
+            printf("[!!] Falha ao inicializar syscall direto\n");
+        }
 
-	// deconstructor, called automatically when closing.
-	~memify()
-	{
-		if (handle)
-			CloseHandle(handle);
-	}
+        //VWrite = (pNtWriteVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
 
-	// shorten name here
-	uintptr_t GetBase(std::string_view moduleName)
-	{
-		return GetBaseModule(moduleName);
-	}
+        processID = GetProcessId(processName);
 
-	// read
-	template <typename T> // use types which are defined later on, so it's compatible with alot of shit.
-	T Read(uintptr_t address)
-	{
-		T buffer{ };
-		VRead(handle, (void*)address, &buffer, sizeof(T), 0);
-		return buffer;
-	}
+        if (processID != 0)
+        {
+            handle = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, processID);
+            if (!handle) {
+                printf("[>>] Falha ao abrir handle para o processo: %.*s\n",
+                    (int)processName.length(), processName.data());
+            }
+            else {
+                //printf("[>>] Anexado ao processo: %.*s (PID: %d)\n",
+                    //(int)processName.length(), processName.data(), processID);
+            }
+        }
+        else {
+            printf("[>>] Processo nao encontrado: %.*s\n",
+                (int)processName.length(), processName.data());
+        }
+    }
 
-	template <typename T>
-	T Write(uintptr_t address, T value)
-	{
-		VWrite(handle, (void*)address, &value, sizeof(T), NULL);
-		return value;
-	}
+    ~memify()
+    {
+        if (handle)
+            CloseHandle(handle);
+    }
 
-	// for reading structs and strings and shit
-	bool ReadRaw(uintptr_t address, void* buffer, size_t size)
-	{
-		SIZE_T bytesRead;
-		if (VRead(handle, (void*)address, buffer, static_cast<ULONG>(size), (PULONG)&bytesRead))
-			return bytesRead = size;
+    uintptr_t GetBase(std::string_view moduleName)
+    {
+        return GetBaseModule(moduleName);
+    }
 
-		return false;
-	}
+    template <typename T>
+    T Read(uintptr_t address)
+    {
+        T buffer{ };
+        VRead(handle, (void*)address, &buffer, sizeof(T), 0);
+        return buffer;
+    }
 
-	// utilities, shit that isn't required but nice to have
+    template <typename T>
+    T Write(uintptr_t address, T value)
+    {
+        if (VWrite) {
+            VWrite(handle, (void*)address, &value, sizeof(T), NULL);
+        }
+        return value;
+    }
 
-	bool ProcessIsOpen(const std::string_view processName)
-	{
-		return GetProcessId(processName) != 0;
-	}
+    bool ReadRaw(uintptr_t address, void* buffer, size_t size)
+    {
+        SIZE_T bytesRead = 0;
+        NTSTATUS status = VRead(handle, (void*)address, buffer, static_cast<ULONG>(size), (PULONG)&bytesRead);
 
-	bool InForeground(const std::string& windowName)
-	{
-		// just takes Counter-Strike 2 but change to whatever u want, or implement an input you can do that too
-		// maybe get the foreground window and then compare it to your own window, use processID, anything u want
-		HWND current = GetForegroundWindow();
+        return (status == 0 && bytesRead == size);
+    }
 
-		char title[256];
-		GetWindowText(current, title, sizeof(title));
+    bool ProcessIsOpen(const std::string_view processName)
+    {
+        return GetProcessId(processName) != 0;
+    }
 
-		if (strstr(title, windowName.c_str()) != nullptr)
-			return true;
+    bool InForeground(const std::string& windowName)
+    {
+        HWND current = GetForegroundWindow();
 
-		return false;
-	}
+        char title[256];
+        GetWindowText(current, title, sizeof(title));
+
+        if (strstr(title, windowName.c_str()) != nullptr)
+            return true;
+
+        return false;
+    }
+
+    bool IsAttached() const {
+        return handle != 0;
+    }
+
+    DWORD GetPID() const {
+        return processID;
+    }
 };

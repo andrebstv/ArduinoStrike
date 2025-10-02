@@ -73,9 +73,7 @@ int main(int argc, char* argv[])
         Logger::LogMessage("Exiting...");
         return 1;
     }
-    //InstallMouseHook();
 
-    //std::thread(HookThread).detach();
     utils.PrintAscii(ASCII_OUTRO);
     utils.PrintHotkeys(config.GenerateHotkeysString());
 
@@ -86,12 +84,12 @@ int main(int argc, char* argv[])
     manager.AddModule<RapidFire>("RapidFire", VK_MBUTTON);
     manager.AddModule<RecoilControl>("RecoilControl", manager);
     manager.AddModule<AutoAccept>("AutoAccept", config.GetAutoAcceptKey());
-    //manager.AddModule<ColorBot>("ColorBot", config.GetColorThreshold(), config.GetColorBotKey());
+    manager.AddModule<ColorBot>("ColorBot", config.GetColorThreshold(), config.GetColorBotKey());
 
     while (!g_shouldExit)
     {
         manager.ProcessModules(*arduino, config);
-        sleep_for(milliseconds(5));
+        sleep_for(milliseconds(10));
     }
     
     delete arduino;

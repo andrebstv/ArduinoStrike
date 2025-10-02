@@ -33,6 +33,9 @@
       <Filter>Logger</Filter>
     </ClCompile>
     <ClCompile Include="Weapons.cpp" />
+    <ClCompile Include="syscall.cpp">
+      <Filter>CS2_Dumper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Arduino">
@@ -137,6 +140,9 @@
       <Filter>CS2_Dumper</Filter>
     </ClInclude>
     <ClInclude Include="recoil.hpp">
+      <Filter>CS2_Dumper</Filter>
+    </ClInclude>
+    <ClInclude Include="mem_ntdll.hpp">
       <Filter>CS2_Dumper</Filter>
     </ClInclude>
   </ItemGroup>

@@ -88,7 +88,7 @@ void AutoAccept::OnToggleActive(Arduino& arduino, const Config& config)
     else
     {
         // Calculate a step size to move the cursor closer to the target.
-        const double step = min(distance / 4.0, 10.0);
+        const double step = min(distance / 2.0, 30.0);
 
         // Calculate the x and y components of the movement vector.
         const int moveX = static_cast<int>((position.x - current.x) / distance * step);

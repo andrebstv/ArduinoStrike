@@ -1,56 +1,9 @@
 #include "ColorBot.h"
 
 
-
-//HWND ColorBot::CreateOverlayWindow() {
-//    HWND hwnd = CreateWindowEx(
-//        WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED,
-//        "OverlayClass",
-//        "CS2 Overlay",
-//        WS_POPUP,
-//        0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
-//        NULL, NULL, GetModuleHandle(NULL), NULL
-//    );
-//
-//    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
-//    return hwnd;
-//}
-
-//void DrawOverlay(HDC hdc, COLORREF currentColor) {
-//    SetTextColor(hdc, RGB(255, 255, 0));
-//    SetBkMode(hdc, TRANSPARENT);
-//
-//    // Limpar a área anterior
-//    RECT clearRect = { 40, 40, 400, 120 };
-//    FillRect(hdc, &clearRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
-//
-//    // Converter COLORREF para valores RGB
-//    int red = GetRValue(currentColor);
-//    int green = GetGValue(currentColor);
-//    int blue = GetBValue(currentColor);
-//
-//    // Criar strings para exibir
-//    char colorText[100];
-//    char rgbText[100];
-//
-//    sprintf_s(colorText, "Color Value: %lu", currentColor);
-//    sprintf_s(rgbText, "RGB: (%d, %d, %d)", red, green, blue);
-//
-//    TextOut(hdc, 50, 50, colorText, strlen(colorText));
-//    TextOut(hdc, 50, 70, rgbText, strlen(rgbText));
-//    TextOut(hdc, 50, 90, "CPU: 45%", 8);
-//}
-
-
 ColorBot::ColorBot(int threshold, int activationKey) : HoldableModule(activationKey), threshold(threshold)
 {
     SetProcessDPIAware();
-    // Criar e configurar o overlay
-    //overlayWindow = CreateOverlayWindow();
-    //SetOverlayWindow(overlayWindow);
-
-    //// Mostrar a janela
-    //ShowWindow(overlayWindow, SW_SHOW);
 }
 
 COLORREF ColorBot::GetPixelColor(int x, int y) const
@@ -72,32 +25,28 @@ bool ColorBot::IsColorDifferent(COLORREF color1, COLORREF color2, int threshold)
 
 void ColorBot::OnKeyHold(Arduino& arduino, const Config& config)
 {
-    POINT cursor;
-    #define pixel_offset -3
-    if (!GetCursorPos(&cursor)) return;
+    memify mem("cs2.exe");
+    uintptr_t client = mem.GetBase("client.dll"); //Acha a base do client.dll (módulo principal do CS2 para entidades, mira etc)
 
-    COLORREF initial = GetPixelColor(cursor.x + pixel_offset, cursor.y + pixel_offset);
+    int delayx = std::rand() % (90 - 70 + 1) + 70;
+    int delayy = std::rand() % (30 - 10 + 1) + 10;
 
     while (IsKeyHolded(GetKey()))
     {
-        GetCursorPos(&cursor);
-        COLORREF current = GetPixelColor(cursor.x + pixel_offset, cursor.y + pixel_offset);
-        //OutputDebugStringA("[DEBUGcor] Entrou no RapidFire\n");
-        //std::cout << "[DEBUG] Cor = " << current << std::endl;
-        // 
-        // Atualizar o overlay se a janela existir
-        //if (overlayWindow != nullptr) {
-        //    HDC hdc = GetDC(overlayWindow);
-        //    DrawOverlay(hdc, current);
-        //    ReleaseDC(overlayWindow, hdc);
-        //}
+        auto localPlayer = mem.Read<uintptr_t>(client + cs2_dumper4::offsets::client_dll::dwLocalPlayerPawn); //Acha a instancia do jogador 1a pessoa.
+        int entIndex = mem.Read<int>(localPlayer + cs2_dumper::schemas::client_dll::C_CSPlayerPawn::m_iIDEntIndex); //Acha a instancia de quem está na mira.
+        //Utils utils;
+        //utils.ConsoleClear();
+        //std::cout << "Entidade: <"<< static_cast<int>(entIndex) << std::endl;
 
-        if (IsColorDifferent(initial, current, threshold))
+        if (entIndex > 0) //O valor da instancia é -1 se nao tiver mirando em nada, e um valor >0 se tiver algo na mira.
         {
+            sleep_for(milliseconds(delayy));
             arduino.WriteMessage("MOUSE_LEFT_CLICK");
+            sleep_for(milliseconds(delayx));
         }
+        else sleep_for(milliseconds(delayx));
 
-        sleep_for(milliseconds(5));
     }
 }
 
