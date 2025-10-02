@@ -75,17 +75,18 @@ int main(int argc, char* argv[])
     }
     //InstallMouseHook();
 
-    std::thread(HookThread).detach();
+    //std::thread(HookThread).detach();
     utils.PrintAscii(ASCII_OUTRO);
     utils.PrintHotkeys(config.GenerateHotkeysString());
 
+    std::srand(std::time(nullptr));
     ModuleManager manager;
     manager.AddModule<Bhop>("Bhop", VK_SPACE);
     manager.AddModule<FastReload>("FastReload");
     manager.AddModule<RapidFire>("RapidFire", VK_MBUTTON);
     manager.AddModule<RecoilControl>("RecoilControl", manager);
     manager.AddModule<AutoAccept>("AutoAccept", config.GetAutoAcceptKey());
-    manager.AddModule<ColorBot>("ColorBot", config.GetColorThreshold(), config.GetColorBotKey());
+    //manager.AddModule<ColorBot>("ColorBot", config.GetColorThreshold(), config.GetColorBotKey());
 
     while (!g_shouldExit)
     {

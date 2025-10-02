@@ -117,6 +117,8 @@ void loop()
     if (Serial.available() > 0)
     {
         String message = Serial.readStringUntil('\0');
+        LED = !LED;
+        timer_led = 500;
         // Serial.print("DEBUG:[");
         // Serial.print(message);
         // Serial.println("]");
@@ -124,6 +126,11 @@ void loop()
         if (message == "MOUSE_MIDDLE_HOLDED")
         {
             handle_mouse_middle_holded();
+        }
+        if (message == "HEART_BEAT")
+        {
+            LED = !LED;
+            Serial.print('H');
         }
         else if (message == "SPACE_BUTTON_HOLDED")
         {
@@ -165,7 +172,7 @@ void loop()
     {
         if ((millis() - timer_led) > T_LED)
         {
-            LED = !LED;
+            LED = 0;
             timer_led = millis();
         }
     }

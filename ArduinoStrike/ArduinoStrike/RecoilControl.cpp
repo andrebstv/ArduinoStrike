@@ -89,7 +89,7 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
             float mouseMoveX = -(-(aimPunchAngle.y - oPunch.y) * 2.f / (yawFactor * sensitivity));
             float mouseMoveY = -(aimPunchAngle.x - oPunch.x) * 2.f / (pitchFactor * sensitivity);
 
-            std::srand(std::time(nullptr));
+            //std::srand(std::time(nullptr));
 
             // Gera um número aleatório entre 30 e 50, inclusive para piorar o movimento.
             //int valor = std::rand() % (max - min + 1) + min;
@@ -104,7 +104,7 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
                                 + "," + to_string(mouseMoveY) 
                                 + "," + to_string(smoothness)
                                 ); //Arduino usa isso pra smoothness
-             std::cout << "Comando: <"<< ("MOUSE_LEFT_HOLDED:" + to_string(mouseMoveX) + "," + to_string(mouseMoveY) + "," + to_string(smoothness)) << "> " << std::endl;
+             //std::cout << "Comando: <"<< ("MOUSE_LEFT_HOLDED:" + to_string(mouseMoveX) + "," + to_string(mouseMoveY) + "," + to_string(smoothness)) << "> " << std::endl;
              sleep_for(milliseconds(delayx));
 
              /*Fica no prego, mas escreve na memoria, cuidado ao usar!!! */
