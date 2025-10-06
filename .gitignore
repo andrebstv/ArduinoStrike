@@ -429,25 +429,17 @@ FodyWeavers.xsd
 .Trashes
 ehthumbs.db
 Thumbs.db
-
 # Log files
 *.log
 *.tlog
 *.log.*
-
-# Configuration files that might contain sensitive data
-Config.json
-device_config.cfg
-
 # Visual Studio 6 workspace and project file (working project files containing files to include in project)
 *.dsw
 *.dsp
-
 # Visual Studio 6 technical files
 *.ncb
 *.aps 
 /PlatformIO/.vscode/c_cpp_properties.json
 /PlatformIO/.vscode/launch.json
 PlatformIO/.vscode/
-*.vcxproj
-.vcxproj
+

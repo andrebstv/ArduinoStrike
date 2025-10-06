@@ -32,10 +32,10 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Logger</Filter>
     </ClCompile>
-    <ClCompile Include="Weapons.cpp" />
     <ClCompile Include="syscall.cpp">
       <Filter>CS2_Dumper</Filter>
     </ClCompile>
+    <ClCompile Include="Weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Arduino">
@@ -145,5 +145,6 @@
     <ClInclude Include="mem_ntdll.hpp">
       <Filter>CS2_Dumper</Filter>
     </ClInclude>
+    <ClInclude Include="json.hpp" />
   </ItemGroup>
 </Project>
