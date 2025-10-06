@@ -86,7 +86,7 @@ private:
             NumberOfBytesToRead,
             NumberOfBytesRead
         );
-    }
+    }//
 
     // Versao com debug
 

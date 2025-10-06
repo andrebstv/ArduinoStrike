@@ -11,7 +11,7 @@
 
 #include <thread>  // Necessário para std::this_thread::sleep_for
 #include <chrono>  // Necessário para std::chrono::milliseconds
-
+extern memify mem;
 
 class ColorBot : public HoldableModule
 {

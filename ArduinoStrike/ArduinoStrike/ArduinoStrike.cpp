@@ -79,11 +79,11 @@ int main(int argc, char* argv[])
 
     std::srand(std::time(nullptr));
     ModuleManager manager;
-    manager.AddModule<Bhop>("Bhop", VK_SPACE);
-    manager.AddModule<FastReload>("FastReload");
-    manager.AddModule<RapidFire>("RapidFire", VK_MBUTTON);
+    //manager.AddModule<Bhop>("Bhop", VK_SPACE);
+    //manager.AddModule<FastReload>("FastReload");
+    //manager.AddModule<RapidFire>("RapidFire", VK_MBUTTON);
     manager.AddModule<RecoilControl>("RecoilControl", manager);
-    manager.AddModule<AutoAccept>("AutoAccept", config.GetAutoAcceptKey());
+    //manager.AddModule<AutoAccept>("AutoAccept", config.GetAutoAcceptKey());
     manager.AddModule<ColorBot>("ColorBot", config.GetColorThreshold(), config.GetColorBotKey());
 
     while (!g_shouldExit)

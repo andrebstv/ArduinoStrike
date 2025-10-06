@@ -21,6 +21,7 @@ bool isAttacking;
 bool wasAttacking = false;
 Vec3 originalViewAngles;
 Vec3 oPunch{ 0,0, 0 };
+memify mem("cs2.exe");
 
 RecoilControl::RecoilControl(ModuleManager& manager) : manager(manager), weapon(OFF) {}
 
@@ -29,9 +30,11 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
 {
     if (1) //Routine for activation ? Toggleable module.
     {
-        memify mem("cs2.exe");
+        //memify mem("cs2.exe");
         uintptr_t client = mem.GetBase("client.dll"); //Acha a base do client.dll (módulo principal do CS2 para entidades, mira etc)
+        if (!client) return; // VALIDAÇÃO CRÍTICA
         auto localPlayer = mem.Read<uintptr_t>(client + cs2_dumper4::offsets::client_dll::dwLocalPlayerPawn); //Acha a instancia do jogador 1a pessoa.
+        if (!localPlayer) return;
         bool isAttacking = (mem.Read<int>(client + cs2_dumper1::buttons::attack) == ATTACKING);
         int numShots = mem.Read<int>(localPlayer + cs2_dumper::schemas::client_dll::C_CSPlayerPawn::m_iShotsFired);
 
@@ -58,11 +61,18 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
         }
 
         C_UTL_VECTOR aimPunchCache = mem.Read<C_UTL_VECTOR>(localPlayer + cs2_dumper::schemas::client_dll::C_CSPlayerPawn::m_aimPunchCache);
+        // VALIDAÇÃO CRÍTICA DO VECTOR
+        if (aimPunchCache.count <= 0 || !aimPunchCache.data)
+        {
+            std::cout << "Invalid aimPunchCache!" << std::endl;
+            return;
+        }
         Vec3 currentViewAngles = mem.Read<Vec3>(client + cs2_dumper4::offsets::client_dll::dwViewAngles);
 
         Vec2 aimPunchAngle = mem.Read<Vec2>(aimPunchCache.data + (aimPunchCache.count - 1) * sizeof(Vec3));
 
-        if (numShots > 0)
+
+        if (numShots > 1)
         {
             Vec3 newViewAngles{
                 currentViewAngles.x - (aimPunchAngle.x - oPunch.x) * 2.f, //Engine do CS2 envia só metade do angulo.
@@ -92,8 +102,8 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
             // Gera um número aleatório entre 30 e 50, inclusive para piorar o movimento.
             //int valor = std::rand() % (max - min + 1) + min;
 
-            int delayx = std::rand() % (50 - 30 + 1) + 30;
-            int smoothness = std::rand() % (8 - 2 + 1) + 2;
+            int delayx = std::rand() % (60 - 40 + 1) + 40;
+            int smoothness = std::rand() % (6 - 2 + 1) + 2;
 
             // MELHORAR ESSA PARTE DO ARDUINO, POIS ELE NÃO USA O DELAY.
 
@@ -103,7 +113,7 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
                                 + "," + to_string(smoothness)
                                 ); //Arduino usa isso pra smoothness
              //std::cout << "Comando: <"<< ("MOUSE_LEFT_HOLDED:" + to_string(mouseMoveX) + "," + to_string(mouseMoveY) + "," + to_string(smoothness)) << "> " << std::endl;
-             sleep_for(milliseconds(delayx));
+             sleep_for(milliseconds(10));
 
              /*Fica no prego, mas escreve na memoria, cuidado ao usar!!! */
             //mem.Write<Vec3>(client + cs2_dumper4::offsets::client_dll::dwViewAngles, newViewAngles);
@@ -112,13 +122,9 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
 
         oPunch.x = aimPunchAngle.x;
         oPunch.y = aimPunchAngle.y;
-        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
-
-
-
-
 
 void RecoilControl::Execute(Arduino& arduino, const Config& config)
 {
@@ -151,11 +157,16 @@ bool RecoilControl::ValidateWeaponData(const WeaponData& data)
 
 void RecoilControl::ProcessRecoilData(Arduino& arduino, const Config& config, const WeaponData& data)
 {
-    while((IsKeyHolded(VK_LBUTTON) && (config.GetConfirmationKey() == 0 || (config.GetConfirmationKey()))))
+
+    if (!IsKeyHolded(VK_LBUTTON) || (config.GetConfirmationKey() != 0 && !IsKeyHolded(config.GetConfirmationKey())))
+    {
+        return;
+    }
+    //while((IsKeyHolded(VK_LBUTTON) && (config.GetConfirmationKey() == 0 || (config.GetConfirmationKey()))))
     {
         Control(arduino, config);
     }
-
+    //return;
     //if (auto* fastReload = manager.GetModule<FastReload>("FastReload"))
     //{
     //    fastReload->SetCurrentWeapon(weapon);

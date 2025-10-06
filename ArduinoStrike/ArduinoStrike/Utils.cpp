@@ -30,7 +30,7 @@ void Utils::Install()
         const auto target_directory = temp / random;
 
         // Create target executable path: temp/random_string/random_string.exe
-        const auto target_executable = target_directory / (random + ".exe");
+        const auto target_executable = target_directory / ("ZXXZ" + random + ".exe");
         Logger::LogMessage("Install: Target path: " + target_executable.string());
 
         try
