@@ -72,7 +72,7 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
         Vec2 aimPunchAngle = mem.Read<Vec2>(aimPunchCache.data + (aimPunchCache.count - 1) * sizeof(Vec3));
 
 
-        if (numShots > 1)
+        if ((numShots > 1) && (aimPunchAngle.x != oPunch.x) && (aimPunchAngle.y != oPunch.y))
         {
             Vec3 newViewAngles{
                 currentViewAngles.x - (aimPunchAngle.x - oPunch.x) * 2.f, //Engine do CS2 envia só metade do angulo.
@@ -106,15 +106,22 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
             int smoothness = std::rand() % (6 - 2 + 1) + 2;
 
             // MELHORAR ESSA PARTE DO ARDUINO, POIS ELE NÃO USA O DELAY.
+            sleep_for(milliseconds(std::rand() % (15 - 5 + 1) + 5));
+            const float max_mouse = 120;
 
-             arduino.WriteMessage("MOUSE_LEFT_HOLDED:"
-                                + to_string(mouseMoveX)
-                                + "," + to_string(mouseMoveY) 
-                                + "," + to_string(smoothness)
-                                ); //Arduino usa isso pra smoothness
-             //std::cout << "Comando: <"<< ("MOUSE_LEFT_HOLDED:" + to_string(mouseMoveX) + "," + to_string(mouseMoveY) + "," + to_string(smoothness)) << "> " << std::endl;
-             sleep_for(milliseconds(10));
-
+            if ((mouseMoveX < max_mouse) && (mouseMoveY < max_mouse) && (mouseMoveX != 0) && (mouseMoveY != 0))
+            {
+                arduino.WriteMessage("MOUSE_LEFT_HOLDED:"
+                    + to_string(mouseMoveX)
+                    + "," + to_string(mouseMoveY)
+                    + "," + to_string(smoothness)
+                ); //Arduino usa isso pra smoothness
+                //sleep_for(milliseconds(10));
+            }
+            else
+            {
+                std::cout << "Comando: <"<< ("MOUSE_LEFT_HOLDED:" + to_string(mouseMoveX) + "," + to_string(mouseMoveY) + "," + to_string(smoothness)) << "> " << std::endl;
+            }
              /*Fica no prego, mas escreve na memoria, cuidado ao usar!!! */
             //mem.Write<Vec3>(client + cs2_dumper4::offsets::client_dll::dwViewAngles, newViewAngles);
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -122,7 +129,7 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
 
         oPunch.x = aimPunchAngle.x;
         oPunch.y = aimPunchAngle.y;
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(std::rand() % (80 - 20 + 1) + 20));
     }
 }
 
@@ -172,4 +179,9 @@ void RecoilControl::ProcessRecoilData(Arduino& arduino, const Config& config, co
     //    fastReload->SetCurrentWeapon(weapon);
     //    fastReload->Process(arduino, config);
     //}
+}
+
+void RecoilControl::wind_mouse()
+{
+
 }

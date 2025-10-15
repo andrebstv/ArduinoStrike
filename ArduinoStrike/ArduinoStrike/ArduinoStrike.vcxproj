@@ -48,6 +48,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <PublicIncludeDirectories>
+    </PublicIncludeDirectories>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>
+    </PublicModuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -105,6 +113,7 @@
     <ClCompile Include="RapidFire.cpp" />
     <ClCompile Include="RecoilControl.cpp" />
     <ClCompile Include="syscall.cpp" />
+    <ClCompile Include="timerbomb.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Weapons.cpp" />
   </ItemGroup>
@@ -125,6 +134,7 @@
     <ClInclude Include="RapidFire.h" />
     <ClInclude Include="RecoilControl.h" />
     <ClInclude Include="SystemModule.h" />
+    <ClInclude Include="timerbomb.h" />
     <ClInclude Include="ToggleableModule.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Weapons.h" />
@@ -134,7 +144,6 @@
     <ClInclude Include="client_dll.hpp" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="mem.hpp" />
-    <ClInclude Include="mem_ntdll.hpp" />
     <ClInclude Include="offsets.hpp" />
     <ClInclude Include="recoil.hpp" />
   </ItemGroup>

@@ -20,4 +20,5 @@ private:
     double CalculateModifier(const Config& config, double obs);
     bool ValidateWeaponData(const WeaponData& data);
     void ProcessRecoilData(Arduino& arduino, const Config& config, const WeaponData& data);
+    void wind_mouse();
 };

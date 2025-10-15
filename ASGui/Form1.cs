@@ -1,11 +1,14 @@
+using BombTimer;
+using ImGuiNET;
+using System.Diagnostics;
 using System.Diagnostics;
 using System.Globalization;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Windows.Forms;
-using System.Diagnostics;
 using System.Windows;
-using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace WinFormsApp1
 {
@@ -14,6 +17,8 @@ namespace WinFormsApp1
         public Form1()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Minimized;
+            MinimizarParaTray();
         }
         private string caminhoArquivo; // para guardar o JSON que foi aberto
         private JsonObject jsonObj; // armazenar o JSON carregado
@@ -140,7 +145,8 @@ namespace WinFormsApp1
             MessageBox.Show("Arquivo atualizado com sucesso!");
         }
         Process backend;
-        private void button3_Click(object sender, EventArgs e)
+
+        private void AtivaProcesso()
         {
             string exePath = @"C:\Diversos\Arduino Strike\ArduinoStrike\ArduinoStrike\x64\Release\ArduinoStrike.exe";
 
@@ -159,6 +165,10 @@ namespace WinFormsApp1
             backend.BeginOutputReadLine();
             backend.BeginErrorReadLine();
             txtLog.Visible = true;
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            AtivaProcesso();
         }
         private void Backend_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -299,6 +309,9 @@ namespace WinFormsApp1
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            notifyIcon1.Visible = false;
+            notifyIcon1.Dispose();
+            bTimer.Close();
             KillZXXCProcesses();
         }
 
@@ -315,10 +328,47 @@ namespace WinFormsApp1
             // Quando minimizar, esconde o form e mostra só no tray
             if (this.WindowState == FormWindowState.Minimized)
             {
-                this.Hide();
-                notifyIcon1.Visible = true;
+                MinimizarParaTray();
+            }
+        }
+
+        private void MinimizarParaTray()
+        {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            notifyIcon1.Visible = true;
+
+            // Só mostra o balloon tip se não for a inicialização
+            if (this.Visible || this.ShowInTaskbar)
+            {
                 notifyIcon1.ShowBalloonTip(1000, "Minimizado", "O aplicativo está rodando na bandeja", ToolTipIcon.Info);
             }
+        }
+        Renderer bTimer = new Renderer();
+        private void bt_bomb_Click(object sender, EventArgs e)
+        {
+            Thread renderThread = new Thread(new ThreadStart(bTimer.Start().Wait));
+            renderThread.SetApartmentState(ApartmentState.STA); // Importante para ImGui
+            renderThread.Start();
+            //ImGui.Begin("Teste2");
+            //ImGui.SetNextWindowSize(new Vector2(400, 300), ImGuiCond.FirstUseEver);
+        }
+
+        private void ativaOProcessoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //bt_roda_processo.PerformClick();
+            AtivaProcesso();
+        }
+
+        private void mataOProcessoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //bt_para_processo.PerformClick();
+            KillZXXCProcesses();
+        }
+
+        private void fechaOAppToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

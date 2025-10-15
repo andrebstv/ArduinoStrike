@@ -88,7 +88,7 @@ void AutoAccept::OnToggleActive(Arduino& arduino, const Config& config)
     else
     {
         // Calculate a step size to move the cursor closer to the target.
-        const double step = min(distance / 2.0, 30.0);
+        const double step = min(distance/2.0, 50.0);
 
         // Calculate the x and y components of the movement vector.
         const int moveX = static_cast<int>((position.x - current.x) / distance * step);
@@ -131,7 +131,7 @@ POINT AutoAccept::CalculateClickPosition(const vector<uint8_t>& pixels, int widt
 
     bool found = false;
     POINT result = { -1, -1 };
-    const int scanMargin = 100;
+    const int scanMargin = 150;
 
     int max_x = 0, max_y = 0;
     int min_x = width, min_y = height;

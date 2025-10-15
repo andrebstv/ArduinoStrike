@@ -12,7 +12,11 @@
 #include "FastReload.h"
 #include "ModuleManager.h"
 #include "RecoilControl.h"
-#include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#define byte win_byte_override
+#include <Windows.h>
+#undef byte
 volatile bool g_shouldExit = false;
 
 static BOOL WINAPI ConsoleHandler(DWORD dwCtrlType)
@@ -83,7 +87,8 @@ int main(int argc, char* argv[])
     //manager.AddModule<FastReload>("FastReload");
     //manager.AddModule<RapidFire>("RapidFire", VK_MBUTTON);
     manager.AddModule<RecoilControl>("RecoilControl", manager);
-    //manager.AddModule<AutoAccept>("AutoAccept", config.GetAutoAcceptKey());
+    //manager.AddModule
+    manager.AddModule<AutoAccept>("AutoAccept", config.GetAutoAcceptKey());
     manager.AddModule<ColorBot>("ColorBot", config.GetColorThreshold(), config.GetColorBotKey());
 
     while (!g_shouldExit)

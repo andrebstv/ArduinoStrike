@@ -77,13 +77,21 @@ void handle_mouse_left_holded(const String& message)
 
     if (index1 != -1 && index2 != -1)
     {
-        double x = message.substring(0, index1).toDouble();
-        double y = message.substring(index1 + 1, index2).toDouble();
+        // double x = round(message.substring(0, index1).toDouble());
+        // double y = round(message.substring(index1 + 1, index2).toDouble());
+        double x = (message.substring(0, index1).toDouble());
+        double y = (message.substring(index1 + 1, index2).toDouble());
         int smoothness = message.substring(index2 + 1).toInt();
 
-        // Mouse.move(x, y); //Quadradao.
+        // int jitterX = random(-2, 3);  // random(-2,3) -> -2, -1, 0, 1, 2
+        // int jitterY = random(-2, 3);
+
+        // x += jitterX;
+        // y += jitterY;
+
+        Mouse.move(x, y); //Quadradao.
         // smoothMouseMove(x, y, smoothness); //Usar essa depois.
-        smoothMouseMove(x, y, 1);
+        // smoothMouseMove(x, y, 1);
     }
 }
 

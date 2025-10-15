@@ -36,6 +36,9 @@
       <Filter>CS2_Dumper</Filter>
     </ClCompile>
     <ClCompile Include="Weapons.cpp" />
+    <ClCompile Include="timerbomb.cpp">
+      <Filter>Modules\TimerBomb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Arduino">
@@ -73,6 +76,9 @@
     </Filter>
     <Filter Include="CS2_Dumper">
       <UniqueIdentifier>{43319b19-633c-436a-879a-009d88816016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\TimerBomb">
+      <UniqueIdentifier>{841c9abb-efc5-4051-91ed-91fb4b301453}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -142,9 +148,9 @@
     <ClInclude Include="recoil.hpp">
       <Filter>CS2_Dumper</Filter>
     </ClInclude>
-    <ClInclude Include="mem_ntdll.hpp">
-      <Filter>CS2_Dumper</Filter>
-    </ClInclude>
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="timerbomb.h">
+      <Filter>Modules\TimerBomb</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,36 +30,43 @@
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            button1 = new Button();
-            button2 = new Button();
+            bt_le_config = new Button();
+            bt_escreve_config = new Button();
             abreConfig = new OpenFileDialog();
             panel1 = new Panel();
             txtLog = new TextBox();
-            button3 = new Button();
-            button4 = new Button();
+            bt_roda_processo = new Button();
+            bt_para_processo = new Button();
             notifyIcon1 = new NotifyIcon(components);
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            ativaOProcessoToolStripMenuItem = new ToolStripMenuItem();
+            mataOProcessoToolStripMenuItem = new ToolStripMenuItem();
+            ativaBTimerToolStripMenuItem = new ToolStripMenuItem();
+            fechaOAppToolStripMenuItem = new ToolStripMenuItem();
+            bt_bomb = new Button();
             panel1.SuspendLayout();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
-            // button1
+            // bt_le_config
             // 
-            button1.Location = new Point(12, 572);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 42);
-            button1.TabIndex = 0;
-            button1.Text = "Lê Config";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            bt_le_config.Location = new Point(12, 572);
+            bt_le_config.Name = "bt_le_config";
+            bt_le_config.Size = new Size(75, 42);
+            bt_le_config.TabIndex = 0;
+            bt_le_config.Text = "Lê Config";
+            bt_le_config.UseVisualStyleBackColor = true;
+            bt_le_config.Click += button1_Click;
             // 
-            // button2
+            // bt_escreve_config
             // 
-            button2.Location = new Point(93, 572);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 42);
-            button2.TabIndex = 1;
-            button2.Text = "Escreve Config";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            bt_escreve_config.Location = new Point(93, 572);
+            bt_escreve_config.Name = "bt_escreve_config";
+            bt_escreve_config.Size = new Size(75, 42);
+            bt_escreve_config.TabIndex = 1;
+            bt_escreve_config.Text = "Escreve Config";
+            bt_escreve_config.UseVisualStyleBackColor = true;
+            bt_escreve_config.Click += button2_Click;
             // 
             // abreConfig
             // 
@@ -81,45 +88,89 @@
             txtLog.Name = "txtLog";
             txtLog.Size = new Size(401, 548);
             txtLog.TabIndex = 0;
-            txtLog.Visible = false;
             // 
-            // button3
+            // bt_roda_processo
             // 
-            button3.Location = new Point(250, 572);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 42);
-            button3.TabIndex = 3;
-            button3.Text = "Roda Processo";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            bt_roda_processo.Location = new Point(250, 572);
+            bt_roda_processo.Name = "bt_roda_processo";
+            bt_roda_processo.Size = new Size(75, 42);
+            bt_roda_processo.TabIndex = 3;
+            bt_roda_processo.Text = "Roda Processo";
+            bt_roda_processo.UseVisualStyleBackColor = true;
+            bt_roda_processo.Click += button3_Click;
             // 
-            // button4
+            // bt_para_processo
             // 
-            button4.Location = new Point(331, 572);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 42);
-            button4.TabIndex = 4;
-            button4.Text = "Para Processo";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
+            bt_para_processo.Location = new Point(331, 572);
+            bt_para_processo.Name = "bt_para_processo";
+            bt_para_processo.Size = new Size(75, 42);
+            bt_para_processo.TabIndex = 4;
+            bt_para_processo.Text = "Para Processo";
+            bt_para_processo.UseVisualStyleBackColor = true;
+            bt_para_processo.Click += button4_Click;
             // 
             // notifyIcon1
             // 
+            notifyIcon1.ContextMenuStrip = contextMenuStrip1;
             notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
             notifyIcon1.Text = "Arduino Strike";
             notifyIcon1.Visible = true;
             notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ativaOProcessoToolStripMenuItem, mataOProcessoToolStripMenuItem, ativaBTimerToolStripMenuItem, fechaOAppToolStripMenuItem });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(162, 92);
+            // 
+            // ativaOProcessoToolStripMenuItem
+            // 
+            ativaOProcessoToolStripMenuItem.Name = "ativaOProcessoToolStripMenuItem";
+            ativaOProcessoToolStripMenuItem.Size = new Size(161, 22);
+            ativaOProcessoToolStripMenuItem.Text = "Ativa o processo";
+            ativaOProcessoToolStripMenuItem.Click += ativaOProcessoToolStripMenuItem_Click;
+            // 
+            // mataOProcessoToolStripMenuItem
+            // 
+            mataOProcessoToolStripMenuItem.Name = "mataOProcessoToolStripMenuItem";
+            mataOProcessoToolStripMenuItem.Size = new Size(161, 22);
+            mataOProcessoToolStripMenuItem.Text = "Mata o processo";
+            mataOProcessoToolStripMenuItem.Click += mataOProcessoToolStripMenuItem_Click;
+            // 
+            // ativaBTimerToolStripMenuItem
+            // 
+            ativaBTimerToolStripMenuItem.Name = "ativaBTimerToolStripMenuItem";
+            ativaBTimerToolStripMenuItem.Size = new Size(161, 22);
+            ativaBTimerToolStripMenuItem.Text = "Ativa BTimer";
+            // 
+            // fechaOAppToolStripMenuItem
+            // 
+            fechaOAppToolStripMenuItem.Name = "fechaOAppToolStripMenuItem";
+            fechaOAppToolStripMenuItem.Size = new Size(161, 22);
+            fechaOAppToolStripMenuItem.Text = "Fecha o app";
+            fechaOAppToolStripMenuItem.Click += fechaOAppToolStripMenuItem_Click;
+            // 
+            // bt_bomb
+            // 
+            bt_bomb.Location = new Point(174, 572);
+            bt_bomb.Name = "bt_bomb";
+            bt_bomb.Size = new Size(70, 42);
+            bt_bomb.TabIndex = 5;
+            bt_bomb.Text = "Bomb\r\nTimer";
+            bt_bomb.UseVisualStyleBackColor = true;
+            bt_bomb.Click += bt_bomb_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(431, 640);
-            Controls.Add(button4);
-            Controls.Add(button3);
+            Controls.Add(bt_bomb);
+            Controls.Add(bt_para_processo);
+            Controls.Add(bt_roda_processo);
             Controls.Add(panel1);
-            Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(bt_escreve_config);
+            Controls.Add(bt_le_config);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Form1";
@@ -131,18 +182,25 @@
             Resize += Form1_Resize;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Button button1;
-        private Button button2;
+        private Button bt_le_config;
+        private Button bt_escreve_config;
         private OpenFileDialog abreConfig;
         private Panel panel1;
-        private Button button3;
-        private Button button4;
+        private Button bt_roda_processo;
+        private Button bt_para_processo;
         private TextBox txtLog;
         private NotifyIcon notifyIcon1;
+        private Button bt_bomb;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem ativaOProcessoToolStripMenuItem;
+        private ToolStripMenuItem mataOProcessoToolStripMenuItem;
+        private ToolStripMenuItem ativaBTimerToolStripMenuItem;
+        private ToolStripMenuItem fechaOAppToolStripMenuItem;
     }
 }

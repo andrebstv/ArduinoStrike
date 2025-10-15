@@ -1,6 +1,6 @@
 #pragma once
 #include "Config.h"
-#include <windows.h>
+#include <Windows.h>
 #include <thread>
 #include <atomic>
 #include <iostream>
