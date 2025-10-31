@@ -130,6 +130,7 @@ void RecoilControl::Control(Arduino& arduino, const Config& config)
         oPunch.x = aimPunchAngle.x;
         oPunch.y = aimPunchAngle.y;
         std::this_thread::sleep_for(std::chrono::milliseconds(std::rand() % (80 - 20 + 1) + 20));
+        //sleep_for(milliseconds(10));
     }
 }
 
